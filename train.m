@@ -1,10 +1,10 @@
-function train(data_features_name, train_set_file_name)
+function Train(data_features_name, train_set_file_name)
 % given a file to read data (as features) from,
 % and a file to save training features/outputs to,
 % generate a training set by sampling
 
 %load constants from file
-load('constants');
+load('data/constants');
 
 %load feature matrix from file
 load(data_features_name, 'F'); 
