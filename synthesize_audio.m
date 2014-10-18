@@ -1,13 +1,8 @@
-function synthesize( params_name, output_name )
-% load a matrix of audio parameters, save an audio file
+function audio = synthesize_audio( P, samps, samplerate )
+% given matrix P of parameter vectors,
+% and number of samples samps corresponding to each parameter vector,
+% synthesize a row vector of audio 
 
-load('constants');
-
-load(params_name, 'P');
-
-audio = synthesize_audio(P, samps, sample_rate);
-
-audiowrite(output_name, audio, sample_rate);
 
 end
 
