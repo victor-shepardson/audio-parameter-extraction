@@ -5,7 +5,7 @@ load('data/constants');
 
 load(params_name, 'P');
 
-audio = synthesize_audio(P, samps, sample_rate);
+audio = synthesize_audio(P, window_samps, sample_rate);
 
 audiowrite(output_name, audio, sample_rate);
 
