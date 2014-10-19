@@ -14,10 +14,10 @@ phase = (1:samps*frames)./samplerate.*2*pi;
 
 % turn a column vector of parameters into a row vector repeated for each
 % sample
-if frames <= 1
+if frames <= 2
     paramvec = @(i) reshape(repmat(P(:,i)', samps, 1), 1, samps*frames);
 else
-    paramvec = @(i) interp(P(:,i)', samps);
+    paramvec = @(i) interp(P(:,i)', samps, 1, 1/samps);
 end
 % params = {amplitude, carrier, ratio, index}
 amp = paramvec(1);
