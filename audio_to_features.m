@@ -12,7 +12,7 @@ windowed = A.*repmat(hann, chunks, 1);
 spectra = fft(windowed, [], 2);
 %discard mirrored half of spectrum, and lowest bin
 spectra = spectra(:, 2:samps/2);
-%convert to phase and log power
+%convert to phase and power
 power = (abs(spectra)/samps).^2;
 phase = angle(spectra);
 % convert phase to phase difference, discarding first frame
@@ -27,7 +27,7 @@ noisefloor = -30;
 
 logged = (noisefloor-max(log(norm), -30))/noisefloor;
 
-F = [ logged ];%cos(deltaphase) sin(deltaphase)];
+F = [ norm ];%cos(deltaphase) sin(deltaphase)];
 E = env;
 
 imagesc(logged);

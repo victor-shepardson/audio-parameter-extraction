@@ -28,14 +28,20 @@ feature_dim = length(eval_feat(zeros(2, samps)));
 Y = zeros(train_set_size, param_dim);
 X = zeros(train_set_size, feature_dim);
 
+verbinc = floor(train_set_size/100);
+pct = 0;
+
 %we go row by row because the synth process isn't conveniently vectorized
 %and we may want the sampling process to be iterative
 for i=1:train_set_size
-   params = sample_params();
-   A = eval_synth(params);
-   feats = eval_feat(A);
-   Y(i, :) = params;
-   X(i, :) = feats;
+    if 0==mod(i,verbinc)
+        disp([num2str(i/verbinc) '%']); 
+    end
+    params = sample_params();
+    A = eval_synth(params);
+    feats = eval_feat(A);
+    Y(i, :) = params;
+    X(i, :) = feats;
 end
 
 end
