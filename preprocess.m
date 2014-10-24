@@ -7,11 +7,11 @@ load('data/constants');
 % read audio and convert to mono row vector
 audio = sum(audioread(data_audio_name), 2)'; 
 
-A = chop_audio(audio, window_samps);
+A = chop_audio(audio, window_samps, overlap);
 
-F = audio_to_features(A, sample_rate);
+[F, E] = audio_to_features(A, sample_rate);
 
-save(data_features_name, 'F');
+save(data_features_name, 'F', 'E');
 
 end
 
