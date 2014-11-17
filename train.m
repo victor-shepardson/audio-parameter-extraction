@@ -10,7 +10,8 @@ load('data/constants');
 load(data_features_name, 'F'); 
 
 %generate train set
-[X,Y] = gen_train_set(F, train_set_size, window_samps, sample_rate);
+rng(0);
+[X,Y] = gen_train_set(F, train_set_size, window_samps, sample_rate, oscs, use_inst_freq);
 
 save(train_set_file_name, 'X', 'Y');
 end

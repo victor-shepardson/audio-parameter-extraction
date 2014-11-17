@@ -4,12 +4,18 @@ function Preprocess( data_audio_name, data_features_name )
 
 load('data/constants');
 
+raw = audioread(data_audio_name);
+
+[len, channels] = size(raw);
+
 % read audio and convert to mono row vector
-audio = sum(audioread(data_audio_name), 2)'; 
+audio = (1/channels).*sum(raw, 2)'; 
 
 A = chop_audio(audio, window_samps, overlap);
 
-[F, E] = audio_to_features(A, sample_rate);
+[F, E] = audio_to_features_cepstrum(A, sample_rate, overlap, use_inst_freq);
+
+imagesc(F);
 
 save(data_features_name, 'F', 'E');
 

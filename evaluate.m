@@ -2,12 +2,14 @@ function Evaluate( train_set_file_name, input_set_file_name, params_file_name )
 % load a training set and input set, produce a set of synth parameters, and
 % save under params_file_name
 
+load('data/constants');
+
 load(train_set_file_name, 'X', 'Y');
 load(input_set_file_name, 'F');
 
 [input_size, feature_dim] = size(F);
 
-P = evaluate_features(F, X, Y);
+P = evaluate_features(F, X, Y, kernel_k, kernel_width);
 
 save(params_file_name, 'P');
 
