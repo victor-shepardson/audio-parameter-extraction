@@ -1,4 +1,4 @@
-function [ X, Y ] = gen_train_set(F, train_set_size, samps, samplerate, oscs, use_inst_freq )
+function [ X, Y ] = gen_train_set(F, train_set_size, samps, samplerate, oscs, use_inst_freq, culling_iterations )
 % given a matrix of feature vectors F,
 % sample the space of parameter vectors to produce a training set [X, Y] s.t.
 % rows of X resemble rows of F
@@ -47,26 +47,36 @@ feature_dim = length(eval_feat(zeros(2, samps)));
 
 param_dim = length(sample_params(1));
 
-Y = zeros(train_set_size, param_dim);
-X = zeros(train_set_size, feature_dim);
-
 pct = 0;
 
-%we go row by row because the synth process isn't conveniently vectorized
-%and we may want the sampling process to be iterative
-for i=1:train_set_size/vectorize
-    cur_pct = i*100*vectorize/train_set_size;
-    if  cur_pct > pct
-        disp(['generating train set: ' num2str(pct) '%']); 
-        pct = ceil(cur_pct);
+Y = zeros(0, param_dim);
+X = zeros(0, feature_dim);
+
+for cull=1:culling_iterations
+    Yt = zeros(train_set_size, param_dim);
+    Xt = zeros(train_set_size, feature_dim);
+    for i=1:train_set_size/vectorize
+        cur_pct = (cull-1)*100/culling_iterations + i*100*vectorize/(train_set_size*culling_iterations);
+        if  cur_pct > pct
+            disp(['generating train set: ' num2str(pct) '%']); 
+            pct = ceil(cur_pct);
+        end
+        params = sample_params(vectorize);
+        A = eval_synth(params);
+        feats = eval_feat(A);
+        rows = (i-1)*vectorize+1 : i*vectorize ;
+        Yt(rows, :) = params;
+        Xt(rows, :) = feats;
     end
-    params = sample_params(vectorize);
-    A = eval_synth(params);
-    feats = eval_feat(A);
-    rows = (i-1)*vectorize+1 : i*vectorize ;
-    Y(rows, :) = params;
-    X(rows, :) = feats;
+    disp('culling train set...'); 
+    X = [X;Xt];
+    Y = [Y;Yt];
+    [idxs, ~] = knnsearch(X, F);
+    uidxs = unique(idxs);
+    X = X(uidxs, :);
+    Y = Y(uidxs, :);
 end
 
-end
+disp(size(X));
 
+end
