@@ -1,4 +1,4 @@
-function [ X, Y ] = gen_train_set_adaptive(F, samps, samplerate, oscs, octaves, use_inst_freq, culling_iterations, initial_samples, samples_per_it, num_nearest_culling, num_components )
+function [ X, Y ] = gen_train_set_adaptive(F, samps, samplerate, oscs, octaves, use_inst_freq, culling_iterations, initial_samples, samples_per_it, num_nearest_culling, num_components, spectra_or_cepstra )
 % given a matrix of feature vectors F,
 % sample the space of parameter vectors to produce a training set [X, Y] s.t.
 % rows of X resemble rows of F
@@ -7,7 +7,7 @@ function [ X, Y ] = gen_train_set_adaptive(F, samps, samplerate, oscs, octaves, 
 
     function [F, E] = eval_feat(A)
         %discard envelope, no overlap
-        [F,E] = audio_to_features_cepstrum(A, samplerate, 1, use_inst_freq);
+        [F,E] = audio_to_features_cepstrum(A, samplerate, 1, use_inst_freq, spectra_or_cepstra);
     end
     function A = eval_synth(P)
         if use_inst_freq %need two frames to get phase difference (vectorize is always 1)
@@ -76,8 +76,6 @@ Xctrl = X;
 Yctrl = Y;
 meandistinit = mean(dists(:,1));
 
-test = 1;
-
 % now for culling_iterations, sample a new crop of pts from normal dists
 % around current X, and cull
 t = cputime();
@@ -102,6 +100,7 @@ for cull=1:culling_iterations
 end
 elapsed = cputime() - t;
 
+test = 0; %change to true to compare other sampling methods 
 if test
     %get principal components
     [pts, m] = size(Y);
@@ -148,13 +147,15 @@ if test
         meandistctrl(cull) = mean(dists(:, 1));
     end
     elapsed_prior = cputime()-t;
-    plot([meandistinit meandistpca; meandistinit meandistctrl; meandistinit meandist]');
+    distcurves = [meandistinit meandistpca; meandistinit meandistctrl; meandistinit meandist]';
+    save('data/distcurves3', 'distcurves', 'elapsed', 'elapsed_pca', 'elapsed_prior');
+    plot(distcurves);
     legend(['adaptive w/ pca (', num2str(elapsed_pca), 's)'],...
         ['prior only (', num2str(elapsed_prior), 's)'],...
         ['adaptive (', num2str(elapsed), 's)']);
 end
-plot([meandistinit meandist]);
+%plot([meandistinit meandist]);
 
-disp(size(X));
+%disp(size(X));
 
 end

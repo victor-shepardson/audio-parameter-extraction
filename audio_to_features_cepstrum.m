@@ -1,4 +1,4 @@
-function [F, E] = audio_to_features_cepstrum( A, samplerate, overlap, use_inst_freq )
+function [F, E] = audio_to_features_cepstrum( A, samplerate, overlap, use_inst_freq, spectra_or_cepstra )
 % A is chunks of audio in row vectors
 % convert to F, matrix of feature vectors
 % and E, envelope column vector
@@ -33,13 +33,6 @@ if use_inst_freq
     %omega = (2*pi*binidxs + overlap*deltaphase)/samps;
     omega = (2*pi*binidxs + deltaphase*overlap)/samps;
     omegahz = omega*samplerate/(2*pi);
-    
-    %h = (deltaphase)/(2*pi)+.5;
-    %v = (noisefloor-mag2db(norm))/noisefloor;
-    %s = ones(size(v));
-    %imtool(hsv2rgb(cat(3, h, s, v)));
-    
-    %return
 end
 [frames, bins] = size(power);
 
@@ -47,20 +40,7 @@ end
 env = sum(power, 2);
 norm = power./repmat(env, 1, bins);
 
-%weight by loudness
-%octave = log2(samplerate*omega/(20*2*pi));
-%dbweight = -2*(octave-5).^2;
-%ampweight = db2mag(dbweight);
-
-% denoised log power
-%lognorm = max(mag2db(norm+eps) - dbweight, noisefloor);
-%lognorm = (noisefloor-max(log(norm), noisefloor))/noisefloor;
-%lognorm = (noisefloor-max(log(ampweight.*norm), noisefloor))/noisefloor;
-%lognorm = log(norm);
-
-%logspectra = lognorm + 1i*deltaphase;
-
-%downsample to mel space
+%downsample to mel scale
 melsamps = samps/8;
 melmin = 30;
 melmax = 3500;
@@ -88,38 +68,17 @@ end
 dbweight = repmat(-(.002*(melmeans(1, :)-2200)).^2, frames, 1);
 melspectra = db2mag(max(mag2db(melspectra+eps) + dbweight, noisefloor));
 
-% back to complex number
-%respectra = ampweight.*lognorm.*(cos(omega) + 1i*sin(omega));
-%respectra = ampweight.*lognorm.*(cos(overlap*deltaphase) + 1i*sin(overlap*deltaphase));
-%respectra = lognorm.*(cos(overlap*deltaphase) + 1i*sin(overlap*deltaphase));
-
 
 %  compute cepstrum
 %centered = melspectra-repmat(mean(melspectra, 2), 1, melsamps);
-cepstra = fft(log(melspectra), [], 2);%cepstra = dct(melspectra')';
-cepstra = cepstra(:, 1:melsamps/2)/melsamps;
+cepstra = fft(log(melspectra), [], 2);
+cepstra = cepstra(:, 2:melsamps/2)/melsamps;
 
-%[frames, csamps] = size(cepstra);
-
-%powercepstra = abs(cepstra);
-%for k=1:frames
-%    v = log(powercepstra(k,:));
-%    covarcepstra(k, :) = reshape(v'*v, 1, melsamps^2);
-%end
-%logcepstra = (noisefloor-max(log(abs(cepstra)), noisefloor))/noisefloor;
-
-%covar = zeros(frames, melsamps^2);
-%mask = triu(ones(size(cv)))>0;
-%for k=1:frames
-%    v = melspectra(k,:);
-%    cv = v'*v;
-%    covar(k, :) = cv();
-%end
-
-%plot(kernels);
-
-%F = melspectra;
-F = [real(cepstra) imag(cepstra)];
+if spectra_or_cepstra
+    F = [fliplr(real(cepstra)) imag(cepstra)];
+else
+    F = melspectra;
+end
 E = env;
 
 %imagesc(kernels);

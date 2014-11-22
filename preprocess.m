@@ -13,9 +13,14 @@ audio = (1/channels).*sum(raw, 2)';
 
 A = chop_audio(audio, window_samps, overlap);
 
-[F, E] = audio_to_features_cepstrum(A, sample_rate, overlap, use_inst_freq);
+[F, E] = audio_to_features_cepstrum(A, sample_rate, overlap, use_inst_freq, spectra_or_cepstra);
 
 imagesc(F);
+title('Cepstral Feature - Resynth gtr.wav, 24 oscs');
+xlabel('Feature');
+ylabel('Time Window');
+colorbar();
+truesize();
 
 save(data_features_name, 'F', 'E');
 

@@ -10,10 +10,9 @@ load('data/constants');
 load(data_features_name, 'F'); 
 
 %generate train set
-rng(0);
 [X,Y] = gen_train_set_adaptive(F, window_samps, sample_rate, oscs, octaves, ...
     use_inst_freq, culling_iterations,initial_samples, samples_per_it, ...
-    num_nearest_culling, num_components);
+    num_nearest_culling, num_components, spectra_or_cepstra);
 
 save(train_set_file_name, 'X', 'Y');
 end
