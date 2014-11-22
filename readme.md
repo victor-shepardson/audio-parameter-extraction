@@ -32,8 +32,10 @@ given .mat containing synth parameters and feature .mat which contains envelope 
 for example: 
 
 	Constants();
-	Preprocess('input.wav', 'input_feats');
-	Preprocess('example.wav', 'example_feats');
-	Train('example_feats', 'trained_feats_params');
-	Evaluate('trained_feats_params', 'input_feats', 'output_params');
-	Synthesize('input_feats', 'output_params', 'output.wav');
+	Preprocess('audio/gtr.wav', 'data/gtr_feats');
+	Preprocess('audio/voice.wav', 'data/voice_feats');
+	Train('data/voice_feats', 'data/voice_train');
+	Evaluate('data/voice_train', 'data/gtr_feats', 'data/gtr_params');
+	Synthesize('data/gtr_feats', 'data/gtr_params', 'gtr_resynth.wav');
+
+is equivalent to `ResynthesizeFrom('audio/gtr.wav', 'audio/voice.wav', 'data', 0)`
