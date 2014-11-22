@@ -34,4 +34,6 @@ for example:
 	Constants();
 	Preprocess('input.wav', 'input_feats');
 	Preprocess('example.wav', 'example_feats');
-	Train('example_feats', 'trained_feats_params'); Evaluate('trained_feats_params', 'input_feats', 'output_params'); Synthesize('input_feats', 'output_params', 'output.wav');
+	Train('example_feats', 'trained_feats_params');
+	Evaluate('trained_feats_params', 'input_feats', 'output_params');
+	Synthesize('input_feats', 'output_params', 'output.wav');
